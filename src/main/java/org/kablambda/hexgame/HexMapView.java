@@ -15,17 +15,18 @@ import java.util.List;
 
 public class HexMapView<T> extends JPanel {
 
-    private static int SIZE = 30;
-
     private final HexMap<T> map;
     private final HexRenderer<T> renderer;
-    private final HexPixelCalculator calc = new FlatToppedHexPixelCalculator(SIZE, 10);
+    private final UIParameters uiParameters;
+    private final HexPixelCalculator calc;
     private final Path2D hexOutline;
     private final Dimension preferredSize;
 
-    public HexMapView(HexMap<T> map, HexRenderer<T> renderer, MapEventListener mapEventListener) throws HeadlessException {
+    public HexMapView(HexMap<T> map, HexRenderer<T> renderer, MapEventListener mapEventListener, UIParameters uiParameters) throws HeadlessException {
         this.map = map;
         this.renderer = renderer;
+        this.uiParameters = uiParameters;
+        calc = new FlatToppedHexPixelCalculator(uiParameters.getHexSideLength(), uiParameters.getBorderSize());
         hexOutline = new Path2D.Double();
         List<Point2D> vertices = calc.vertices();
         hexOutline.moveTo(vertices.get(0).getX(), vertices.get(0).getY());
@@ -66,7 +67,6 @@ public class HexMapView<T> extends JPanel {
                 Point2D center = calc.center(h);
                 g2d.translate(center.getX(), center.getY());
                 renderHexOutline(g2d);
-                renderer.paintEmpty(g2d);
             } finally {
                 g2d.setTransform(t);
             }
