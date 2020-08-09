@@ -6,6 +6,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 public class DemoRenderer implements HexRenderer<Color> {
+
+    public DemoRenderer() {
+    }
+
     @Override
     public void paint(Graphics2D g, Color contents) {
         g.setColor(contents);

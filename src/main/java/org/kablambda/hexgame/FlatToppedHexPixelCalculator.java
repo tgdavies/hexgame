@@ -17,11 +17,11 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
 
     private final double size;
 
-    public FlatToppedHexPixelCalculator(int size, int border) {
-        this.size = size;
+    public FlatToppedHexPixelCalculator(UIParameters uiParameters) {
+        this.size = uiParameters.getHexSideLength();
         SQRT3 = Math.sqrt(3.0);
         SQRT3_SIZE = Math.sqrt(3.0) * size;
-        this.border = border;
+        this.border = uiParameters.getBorderSize();
         SQRT3ON2_SIZE = SQRT3_SIZE / 2.0;
         ONEPOINT5_SIZE = 1.5 * size;
     }

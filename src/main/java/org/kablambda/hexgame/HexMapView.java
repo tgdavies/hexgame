@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -22,11 +23,11 @@ public class HexMapView<T> extends JPanel {
     private final Path2D hexOutline;
     private final Dimension preferredSize;
 
-    public HexMapView(HexMap<T> map, HexRenderer<T> renderer, MapEventListener mapEventListener, UIParameters uiParameters) throws HeadlessException {
+    public HexMapView(HexMap<T> map, HexRenderer<T> renderer, MapEventListener mapEventListener, UIParameters uiParameters, HexPixelCalculator calc) throws HeadlessException {
         this.map = map;
         this.renderer = renderer;
         this.uiParameters = uiParameters;
-        calc = new FlatToppedHexPixelCalculator(uiParameters.getHexSideLength(), uiParameters.getBorderSize());
+        this.calc = calc;//new FlatToppedHexPixelCalculator(uiParameters.getHexSideLength(), uiParameters.getBorderSize());
         hexOutline = new Path2D.Double();
         List<Point2D> vertices = calc.vertices();
         hexOutline.moveTo(vertices.get(0).getX(), vertices.get(0).getY());
@@ -61,6 +62,12 @@ public class HexMapView<T> extends JPanel {
     protected void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         super.paintComponent(g);
+        g2d.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         map.streamAll().forEach(h -> {
             AffineTransform t = g2d.getTransform();
             try {

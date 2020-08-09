@@ -5,8 +5,14 @@ import org.kablambda.hexgame.HexRenderer;
 import java.awt.Graphics2D;
 
 public class StateRenderer implements HexRenderer<HexState> {
-    private UnitRenderer unitRenderer = new UnitRenderer();
-    private TerrainRenderer terrainRenderer = new TerrainRenderer();
+
+    private final UnitRenderer unitRenderer;
+    private final TerrainRenderer terrainRenderer;
+
+    public StateRenderer(UnitRenderer unitRenderer, TerrainRenderer terrainRenderer) {
+        this.unitRenderer = unitRenderer;
+        this.terrainRenderer = terrainRenderer;
+    }
 
     @Override
     public void paint(Graphics2D g, HexState contents) {

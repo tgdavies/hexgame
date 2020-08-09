@@ -4,8 +4,6 @@ import org.kablambda.hexgame.HexAddress;
 import org.kablambda.hexgame.HexMap;
 import org.kablambda.hexgame.MapEventListener;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.awt.Color;
 
 public class DemoListener implements MapEventListener {
