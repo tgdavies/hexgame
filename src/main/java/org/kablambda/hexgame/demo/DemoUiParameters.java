@@ -13,4 +13,9 @@ public class DemoUiParameters implements UIParameters {
     public int getBorderSize() {
         return 15;
     }
+
+    @Override
+    public String getTitle() {
+        return "HexMap Demo";
+    }
 }

@@ -1,11 +1,15 @@
 package org.kablambda.hexgame;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.lang.Math.PI;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
 
@@ -32,6 +36,44 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
                 ONEPOINT5_SIZE * address.q() + xOffset(),
                 SQRT3ON2_SIZE * address.q() + SQRT3_SIZE * address.r() + yOffset()
         );
+    }
+
+    @Override
+    public int distance(HexAddress a, HexAddress b) {
+        return (Math.abs(a.q() - b.q())
+                + Math.abs(a.q() + a.r() - b.q() - b.r())
+                + Math.abs(a.r() - b.r())) / 2;
+    }
+
+    @Override
+    public HexAddress closest(HexAddress target, HexAddress... candidates) {
+        int distance = Integer.MAX_VALUE;
+        HexAddress closestCandidate = null;
+        for (HexAddress c : candidates) {
+            int d = distance(target, c);
+            if (closestCandidate == null || d < distance) {
+                closestCandidate = c;
+                distance = d;
+            }
+        }
+        return closestCandidate;
+    }
+
+    @Override
+    public List<HexAddress> surroundingHexes(HexAddress location, HexMap<?> map) {
+        return hexesInRange(location, 1, map);
+    }
+
+    @Override
+    public List<HexAddress> hexesInRange(HexAddress location, int n, HexMap<?> map) {
+        List<HexAddress> hexes = new ArrayList<>();
+        for (int x = -n; x <= n; x++) {
+            for (int y = max(-n, -x-n); y <= min(n, -x+n); ++y) {
+                var z = -x-y;
+                hexes.add(new HexAddress(x + location.q(), z + location.r()));
+            }
+        }
+        return hexes.stream().filter(map::isValidAddress).collect(Collectors.toList());
     }
 
     @Override

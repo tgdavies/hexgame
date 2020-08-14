@@ -3,6 +3,7 @@ package org.kablambda.hexgame;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -10,7 +11,7 @@ public class SimpleHexMap<T> implements HexMap<T> {
 
     private final int columns;
     private final int rows;
-    private final Map<HexAddress, T> map = new HashMap<>();
+    private final Map<HexAddress, T> map = new ConcurrentHashMap<>();
 
     public SimpleHexMap(int columns, int rows) {
         this.columns = columns;
@@ -57,9 +58,15 @@ public class SimpleHexMap<T> implements HexMap<T> {
 
     private void validateAddress(HexAddress a) {
         DoubleHeightAddress da = axialToDoubleheight(a);
-        if (da.col() < 0 || da.row() < 0 || da.col() >= columns || da.row() >= rows) {
+        if (!isValidAddress(a)) {
             throw new RuntimeException("Bad address: " + a + " (" + da + ")");
         }
+    }
+
+    @Override
+    public boolean isValidAddress(HexAddress a) {
+        DoubleHeightAddress da = axialToDoubleheight(a);
+        return da.col() >= 0 && da.row() >= 0 && da.col() < columns && da.row() < rows;
     }
 
     private DoubleHeightAddress axialToDoubleheight(HexAddress a) {

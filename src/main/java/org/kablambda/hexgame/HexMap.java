@@ -10,4 +10,6 @@ public interface HexMap<T> {
     Stream<HexAddress> streamAll();
     int getColumns();
     int getRows();
+
+    boolean isValidAddress(HexAddress a);
 }

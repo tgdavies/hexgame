@@ -23,7 +23,7 @@ public class Game<T> {
     }
 
     public void start() {
-            JFrame f = new JFrame("HexMap Demo");
+            JFrame f = new JFrame(uiParameters.getTitle());
             HexMapView<T> hexMapView = new HexMapView<>(hexMap, hexRenderer, listener, uiParameters, calc);
             JScrollPane scrollPane = new JScrollPane(hexMapView);
             f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

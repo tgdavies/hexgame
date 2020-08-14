@@ -18,4 +18,8 @@ public class DemoListener implements MapEventListener {
     public void hexClicked(HexAddress address) {
         map.put(address, map.get(address).map(c -> c == Color.CYAN ? Color.ORANGE : Color.CYAN).orElse(Color.CYAN));
     }
+
+    @Override
+    public void tick() {
+    }
 }

@@ -17,6 +17,6 @@ public class StateRenderer implements HexRenderer<HexState> {
     @Override
     public void paint(Graphics2D g, HexState contents) {
         terrainRenderer.paint(g, contents.getTerrain());
-        unitRenderer.paint(g, contents.getUnit());
+        contents.getUnit().ifPresent(u -> unitRenderer.paint(g, u));
     }
 }

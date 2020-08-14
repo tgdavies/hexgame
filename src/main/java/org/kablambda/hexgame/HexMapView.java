@@ -1,12 +1,15 @@
 package org.kablambda.hexgame;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -23,11 +26,11 @@ public class HexMapView<T> extends JPanel {
     private final Path2D hexOutline;
     private final Dimension preferredSize;
 
-    public HexMapView(HexMap<T> map, HexRenderer<T> renderer, MapEventListener mapEventListener, UIParameters uiParameters, HexPixelCalculator calc) throws HeadlessException {
+    public HexMapView(HexMap<T> map, HexRenderer<T> renderer, MapEventListener mapEventListener, UIParameters uiParameters, HexPixelCalculator calc) {
         this.map = map;
         this.renderer = renderer;
         this.uiParameters = uiParameters;
-        this.calc = calc;//new FlatToppedHexPixelCalculator(uiParameters.getHexSideLength(), uiParameters.getBorderSize());
+        this.calc = calc;
         hexOutline = new Path2D.Double();
         List<Point2D> vertices = calc.vertices();
         hexOutline.moveTo(vertices.get(0).getX(), vertices.get(0).getY());
@@ -35,6 +38,15 @@ public class HexMapView<T> extends JPanel {
         hexOutline.closePath();
         Point2D size = calc.extent(map.getColumns(), map.getRows());
         preferredSize = new Dimension((int) size.getX(), (int) size.getY());
+        Timer timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mapEventListener.tick();
+                HexMapView.this.repaint();
+            }
+        });
+        timer.setRepeats(true);
+        timer.start();
         addMouseListener(new MouseAdapter() {
             HexAddress clickedHex = null;
 
