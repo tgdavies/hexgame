@@ -1,7 +1,5 @@
 package org.kablambda.hexgame;
 
-import org.kablambda.hexgame.wargame.HexSide;
-
 import java.awt.geom.Point2D;
 import java.util.List;
 

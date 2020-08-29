@@ -1,7 +1,6 @@
 package org.kablambda.hexgame;
 
 import com.google.common.base.Suppliers;
-import org.kablambda.hexgame.wargame.HexSide;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -9,17 +8,16 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.kablambda.hexgame.wargame.HexSide.S1;
-import static org.kablambda.hexgame.wargame.HexSide.S2;
-import static org.kablambda.hexgame.wargame.HexSide.S3;
-import static org.kablambda.hexgame.wargame.HexSide.S4;
-import static org.kablambda.hexgame.wargame.HexSide.S5;
-import static org.kablambda.hexgame.wargame.HexSide.S6;
+import static org.kablambda.hexgame.HexSide.S1;
+import static org.kablambda.hexgame.HexSide.S2;
+import static org.kablambda.hexgame.HexSide.S3;
+import static org.kablambda.hexgame.HexSide.S4;
+import static org.kablambda.hexgame.HexSide.S5;
+import static org.kablambda.hexgame.HexSide.S6;
 
 /**
  * Much of this is from https://www.redblobgames.com/grids/hexagons/
@@ -33,7 +31,8 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
     private final double ONEPOINT5_SIZE;
 
     private final double size;
-    private final Supplier<List<Point2D>> vertices = Suppliers.memoize(() -> IntStream.range(0, 6).mapToObj(this::flatHexCorner).collect(Collectors.toList()));
+    private final Supplier<List<Point2D>> vertices =
+            Suppliers.memoize(() -> IntStream.range(0, 6).mapToObj(this::flatHexCorner).collect(Collectors.toList()));
 
     public FlatToppedHexPixelCalculator(UIParameters uiParameters) {
         this.size = uiParameters.getHexSideLength();
@@ -75,11 +74,9 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
 
     @Override
     public HexSide hexSideBetween(HexAddress h1, HexAddress h2) {
-        int qDiff = h1.q() - h2.q();
-        int rDiff = h1.r() - h2.r();
-        if (Math.abs(qDiff) > 1 || Math.abs(rDiff) > 1) {
-            throw new RuntimeException("Hexes must be adjacent: " + h1 + ", " + h2);
-        }
+        int qDiff = h2.q() - h1.q();
+        int rDiff = h2.r() - h1.r();
+
         return switch (qDiff) {
             case -1 -> choose5or6(rDiff);
             case 0 -> choose1or4(rDiff);
@@ -106,8 +103,8 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
 
     private HexSide choose2or3(int rDiff) {
         return switch (rDiff) {
-            case 0 -> S2;
-            case 1 -> S3;
+            case 0 -> S3;
+            case -1 -> S2;
             default -> throw new RuntimeException("Inconsistent rDiff " + rDiff);
         };
     }
@@ -121,8 +118,8 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
     public List<HexAddress> hexesInRange(HexAddress location, int n, HexMap<?> map) {
         List<HexAddress> hexes = new ArrayList<>();
         for (int x = -n; x <= n; x++) {
-            for (int y = max(-n, -x-n); y <= min(n, -x+n); ++y) {
-                var z = -x-y;
+            for (int y = max(-n, -x - n); y <= min(n, -x + n); ++y) {
+                var z = -x - y;
                 hexes.add(new HexAddress(x + location.q(), z + location.r()));
             }
         }
@@ -136,22 +133,23 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
 
     @Override
     public Point2D extent(int columns, int rows) {
-        return new Point2D.Double((columns) * ONEPOINT5_SIZE + ONEPOINT5_SIZE / 3 + 2 * border, (rows + 1) * SQRT3ON2_SIZE + 2 * border);
+        return new Point2D.Double(
+                (columns) * ONEPOINT5_SIZE + ONEPOINT5_SIZE / 3 + 2 * border, (rows + 1) * SQRT3ON2_SIZE + 2 * border);
     }
 
     @Override
     public HexAddress pointToHex(int x, int y) {
-        x = x - (int)xOffset();
-        y = y - (int)yOffset();
-        double q = (2.0/3.0*x) / size;
-        double r = (-1.0/3.0*x + (SQRT3 / 3.0) * y) / size;
+        x = x - (int) xOffset();
+        y = y - (int) yOffset();
+        double q = (2.0 / 3.0 * x) / size;
+        double r = (-1.0 / 3.0 * x + (SQRT3 / 3.0) * y) / size;
         return round(q, r);
     }
 
     private HexAddress round(double q, double r) {
         double x = q;
         double z = r;
-        double y = -q-r;
+        double y = -q - r;
 
         long rx = Math.round(x);
         long ry = Math.round(y);
@@ -169,14 +167,20 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
             rz = -rx - ry;
         }
 
-        return new HexAddress((int)rx, (int)rz);
+        return new HexAddress((int) rx, (int) rz);
     }
 
+    /**
+     *   4-5
+     *  3/ \0
+     *   \ /
+     *   2-1
+     */
     private Point2D flatHexCorner(int i) {
         double angleDeg = 60 * i;
         double angleRad = PI / 180 * angleDeg;
         return new Point2D.Double(size * Math.cos(angleRad),
-                        size * Math.sin(angleRad));
+                size * Math.sin(angleRad));
     }
 
     /**

@@ -1,9 +1,6 @@
-package org.kablambda.hexgame.wargame;
-
-import org.kablambda.hexgame.HexPixelCalculator;
+package org.kablambda.hexgame;
 
 import java.awt.geom.Point2D;
-import java.util.List;
 
 /**
  *   1
@@ -16,10 +13,10 @@ import java.util.List;
 public enum HexSide {
     S1, S2, S3, S4, S5, S6;
 
-    Edge edgeVertices(HexPixelCalculator calculator) {
+    public Edge edgeVertices(HexPixelCalculator calculator) {
         int i = this.ordinal();
         var vertices = calculator.vertices();
-        return new Edge(vertices.get((i + 5) % 6), vertices.get(i));
+        return new Edge(vertices.get((i + 4) % 6), vertices.get((i + 5) % 6));
     }
 
     public record Edge(Point2D p1, Point2D p2) {

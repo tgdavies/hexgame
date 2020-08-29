@@ -3,15 +3,18 @@ package org.kablambda.hexgame.wargame;
 import org.kablambda.hexgame.HexAddress;
 import org.kablambda.hexgame.HexPixelCalculator;
 import org.kablambda.hexgame.HexRenderer;
+import org.kablambda.hexgame.HexSide;
 import org.kablambda.hexgame.UIParameters;
 import org.locationtech.jts.math.Vector2D;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.util.function.Consumer;
 
 import static java.lang.StrictMath.PI;
 
@@ -42,11 +45,14 @@ public class UnitRenderer implements HexRenderer<Unit> {
             drawGoalArrow(g, unit.getLocation(), unit.getGoal(), unit.getTeam());
         }
         if (unit.getState() instanceof Unit.Fighting fighting && fighting.getAttacker().equals(unit)) {
-            HexSide s = calculator.hexSideBetween(unit.getLocation(), fighting.getAttackersTargetHex());
-            g.setColor(Color.ORANGE);
-            g.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            HexSide.Edge edge = s.edgeVertices(calculator);
-            g.fill(symbolFactory.combat(uiParameters.getHexSideLength()));
+            withReset(g, g2 -> {
+                HexSide s = calculator.hexSideBetween(unit.getLocation(), fighting.getAttackersTargetHex());
+                g2.setColor(Color.ORANGE);
+                g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                HexSide.Edge edge = s.edgeVertices(calculator);
+                g2.translate((edge.p1().getX() + edge.p2().getX())/2.0, (edge.p1().getY() + edge.p2().getY())/2.0);
+                g2.fill(symbolFactory.combat(uiParameters.getHexSideLength()));
+            });
         }
     }
 
@@ -78,5 +84,14 @@ public class UnitRenderer implements HexRenderer<Unit> {
     }
     private void lineTo(Path2D path, Vector2D vector) {
         path.lineTo(vector.getX(), vector.getY());
+    }
+
+    private void withReset(Graphics2D g, Consumer<Graphics2D> c) {
+        AffineTransform t = g.getTransform();
+        try {
+            c.accept(g);
+        } finally {
+            g.setTransform(t);
+        }
     }
 }

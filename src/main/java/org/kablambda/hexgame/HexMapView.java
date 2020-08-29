@@ -57,6 +57,7 @@ public class HexMapView<T> extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (clickedHex != null && clickedHex.equals(calc.pointToHex(e.getX(), e.getY()))) {
+                    System.out.println(clickedHex);
                     mapEventListener.hexClicked(clickedHex);
                     HexMapView.this.repaint();
                 }
