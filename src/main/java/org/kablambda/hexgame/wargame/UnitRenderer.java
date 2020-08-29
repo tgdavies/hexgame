@@ -18,12 +18,12 @@ import static java.lang.StrictMath.PI;
 public class UnitRenderer implements HexRenderer<Unit> {
 
     private final UIParameters uiParameters;
-    private final NatoSymbolFactory natoSymbolFactory;
+    private final SymbolFactory symbolFactory;
     private final HexPixelCalculator calculator;
 
-    public UnitRenderer(UIParameters uiParameters, NatoSymbolFactory natoSymbolFactory, HexPixelCalculator calculator) {
+    public UnitRenderer(UIParameters uiParameters, SymbolFactory symbolFactory, HexPixelCalculator calculator) {
         this.uiParameters = uiParameters;
-        this.natoSymbolFactory = natoSymbolFactory;
+        this.symbolFactory = symbolFactory;
         this.calculator = calculator;
     }
 
@@ -31,7 +31,7 @@ public class UnitRenderer implements HexRenderer<Unit> {
     public void paint(Graphics2D g, Unit unit) {
         g.setColor(unit.getSelected() ? Color.BLACK : unit.getTeam().getColor());
         g.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(natoSymbolFactory.infantry(uiParameters.getHexSideLength()));
+        g.draw(symbolFactory.infantry(uiParameters.getHexSideLength()));
         Arc2D arc = new Arc2D.Double();
         arc.setArcByCenter(0, 0, uiParameters.getHexSideLength() * 0.7, unit.getFatigue() * 180, 180 - (unit.getFatigue() * 180), Arc2D.OPEN);
         g.setColor(unit.getTeam().getColor().darker());
@@ -40,6 +40,13 @@ public class UnitRenderer implements HexRenderer<Unit> {
         g.draw(arc);
         if (unit.getGoal() != null) {
             drawGoalArrow(g, unit.getLocation(), unit.getGoal(), unit.getTeam());
+        }
+        if (unit.getState() instanceof Unit.Fighting fighting && fighting.getAttacker().equals(unit)) {
+            HexSide s = calculator.hexSideBetween(unit.getLocation(), fighting.getAttackersTargetHex());
+            g.setColor(Color.ORANGE);
+            g.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            HexSide.Edge edge = s.edgeVertices(calculator);
+            g.fill(symbolFactory.combat(uiParameters.getHexSideLength()));
         }
     }
 

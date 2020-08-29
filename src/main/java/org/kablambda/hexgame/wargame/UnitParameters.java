@@ -5,7 +5,7 @@ public record UnitParameters(
         double fatigueRecoveryPerTick,
         double movementFatiguePerTick,
         double movementSupplyUsePerTick,
-        double ticksPerMove
+        int ticksPerMove
 ) {
 
     public static UnitParameters DEFAULT = new UnitParameters(

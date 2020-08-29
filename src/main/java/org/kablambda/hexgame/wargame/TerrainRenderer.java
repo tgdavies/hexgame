@@ -8,6 +8,6 @@ public class TerrainRenderer implements HexRenderer<Terrain> {
 
     @Override
     public void paint(Graphics2D g, Terrain contents) {
-        // nothing yet
+        contents.getDecorations().stream().forEach(d -> d.render(g));
     }
 }

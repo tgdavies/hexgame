@@ -7,7 +7,7 @@ import java.util.Optional;
  */
 public class HexState {
     private Unit unit;
-    private Terrain terrain;
+    private Terrain terrain = new Terrain();
 
     public Optional<Unit> getUnit() {
         return Optional.ofNullable(unit);

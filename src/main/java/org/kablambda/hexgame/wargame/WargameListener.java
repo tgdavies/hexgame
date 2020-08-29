@@ -4,8 +4,6 @@ import org.kablambda.hexgame.HexAddress;
 import org.kablambda.hexgame.HexMap;
 import org.kablambda.hexgame.MapEventListener;
 
-import java.util.Optional;
-
 public class WargameListener implements MapEventListener {
 
     private final HexMap<HexState> hexMap;

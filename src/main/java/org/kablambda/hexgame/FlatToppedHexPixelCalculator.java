@@ -1,8 +1,12 @@
 package org.kablambda.hexgame;
 
+import com.google.common.base.Suppliers;
+import org.kablambda.hexgame.wargame.HexSide;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -10,7 +14,16 @@ import java.util.stream.Stream;
 import static java.lang.Math.PI;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static org.kablambda.hexgame.wargame.HexSide.S1;
+import static org.kablambda.hexgame.wargame.HexSide.S2;
+import static org.kablambda.hexgame.wargame.HexSide.S3;
+import static org.kablambda.hexgame.wargame.HexSide.S4;
+import static org.kablambda.hexgame.wargame.HexSide.S5;
+import static org.kablambda.hexgame.wargame.HexSide.S6;
 
+/**
+ * Much of this is from https://www.redblobgames.com/grids/hexagons/
+ */
 public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
 
     private final double SQRT3;
@@ -20,6 +33,7 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
     private final double ONEPOINT5_SIZE;
 
     private final double size;
+    private final Supplier<List<Point2D>> vertices = Suppliers.memoize(() -> IntStream.range(0, 6).mapToObj(this::flatHexCorner).collect(Collectors.toList()));
 
     public FlatToppedHexPixelCalculator(UIParameters uiParameters) {
         this.size = uiParameters.getHexSideLength();
@@ -60,6 +74,45 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
     }
 
     @Override
+    public HexSide hexSideBetween(HexAddress h1, HexAddress h2) {
+        int qDiff = h1.q() - h2.q();
+        int rDiff = h1.r() - h2.r();
+        if (Math.abs(qDiff) > 1 || Math.abs(rDiff) > 1) {
+            throw new RuntimeException("Hexes must be adjacent: " + h1 + ", " + h2);
+        }
+        return switch (qDiff) {
+            case -1 -> choose5or6(rDiff);
+            case 0 -> choose1or4(rDiff);
+            case 1 -> choose2or3(rDiff);
+            default -> throw new RuntimeException("Hexes must be adjacent: " + h1 + ", " + h2);
+        };
+    }
+
+    private HexSide choose5or6(int rDiff) {
+        return switch (rDiff) {
+            case 1 -> S5;
+            case 0 -> S6;
+            default -> throw new RuntimeException("Inconsistent rDiff " + rDiff);
+        };
+    }
+
+    private HexSide choose1or4(int rDiff) {
+        return switch (rDiff) {
+            case -1 -> S1;
+            case 1 -> S4;
+            default -> throw new RuntimeException("Inconsistent rDiff " + rDiff);
+        };
+    }
+
+    private HexSide choose2or3(int rDiff) {
+        return switch (rDiff) {
+            case 0 -> S2;
+            case 1 -> S3;
+            default -> throw new RuntimeException("Inconsistent rDiff " + rDiff);
+        };
+    }
+
+    @Override
     public List<HexAddress> surroundingHexes(HexAddress location, HexMap<?> map) {
         return hexesInRange(location, 1, map);
     }
@@ -78,7 +131,7 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
 
     @Override
     public List<Point2D> vertices() {
-        return IntStream.range(0, 6).mapToObj(this::flatHexCorner).collect(Collectors.toList());
+        return vertices.get();
     }
 
     @Override

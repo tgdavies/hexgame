@@ -65,4 +65,11 @@ public class ConstrainedDouble {
         value = max(min(f.apply(value), max), min);
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "ConstrainedDouble{" +
+               "value=" + value +
+               '}';
+    }
 }

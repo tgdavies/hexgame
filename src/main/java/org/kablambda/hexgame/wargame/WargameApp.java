@@ -33,7 +33,7 @@ public class WargameApp {
 
         setup(hexMap, calc);
 
-        Game game = new Game(hexMap, new StateRenderer(new UnitRenderer(uiParameters, new NatoSymbolFactory(), calc), new TerrainRenderer()), new WargameListener(hexMap), uiParameters, calc);
+        Game game = new Game(hexMap, new StateRenderer(new UnitRenderer(uiParameters, new SymbolFactory(), calc), new TerrainRenderer()), new WargameListener(hexMap), uiParameters, calc);
         game.start();
     }
 

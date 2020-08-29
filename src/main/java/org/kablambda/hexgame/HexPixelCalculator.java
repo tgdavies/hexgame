@@ -1,21 +1,19 @@
 package org.kablambda.hexgame;
 
+import org.kablambda.hexgame.wargame.HexSide;
+
 import java.awt.geom.Point2D;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
 
-/**
- * TODO: Document this class / interface here
- *
- * @since v8.0
- */
+
 public interface HexPixelCalculator {
     Point2D center(HexAddress address);
 
     int distance(HexAddress l1, HexAddress l2);
 
     HexAddress closest(HexAddress target, HexAddress... candidates);
+
+    HexSide hexSideBetween(HexAddress h1, HexAddress h2);
 
     List<HexAddress> surroundingHexes(HexAddress location, HexMap<?> map);
 
