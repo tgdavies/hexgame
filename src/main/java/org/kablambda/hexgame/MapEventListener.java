@@ -1,7 +1,7 @@
 package org.kablambda.hexgame;
 
 public interface MapEventListener {
-    void hexClicked(HexAddress address);
+    void hexClicked(HexClickedEvent event);
 
     void tick();
 }

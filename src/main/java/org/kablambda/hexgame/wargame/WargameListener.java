@@ -1,6 +1,7 @@
 package org.kablambda.hexgame.wargame;
 
 import org.kablambda.hexgame.HexAddress;
+import org.kablambda.hexgame.HexClickedEvent;
 import org.kablambda.hexgame.HexMap;
 import org.kablambda.hexgame.MapEventListener;
 
@@ -12,8 +13,8 @@ public class WargameListener implements MapEventListener {
     public WargameListener(HexMap<HexState> hexMap) {this.hexMap = hexMap;}
 
     @Override
-    public void hexClicked(HexAddress address) {
-        eventHandler = eventHandler.hexClicked(address);
+    public void hexClicked(HexClickedEvent event) {
+        eventHandler = eventHandler.hexClicked(event);
     }
 
     @Override
@@ -24,8 +25,8 @@ public class WargameListener implements MapEventListener {
     private class UnselectedState implements WargameEventHandler {
 
         @Override
-        public WargameEventHandler hexClicked(HexAddress address) {
-            return hexMap.get(address).<WargameEventHandler>flatMap(s -> s.getUnit().map(SelectedState::new)).orElse(this);
+        public WargameEventHandler hexClicked(HexClickedEvent event) {
+            return hexMap.get(event.hexAddress()).<WargameEventHandler>flatMap(s -> s.getUnit().map(SelectedState::new)).orElse(this);
         }
     }
 
@@ -39,9 +40,9 @@ public class WargameListener implements MapEventListener {
         }
 
         @Override
-        public WargameEventHandler hexClicked(HexAddress address) {
-            if (!selectedUnit.getLocation().equals(address)) {
-                selectedUnit.setGoal(address);
+        public WargameEventHandler hexClicked(HexClickedEvent event) {
+            if (!selectedUnit.getLocation().equals(event.hexAddress())) {
+                selectedUnit.setGoal(event.hexAddress());
             }
             selectedUnit.setSelected(false);
             return new UnselectedState();

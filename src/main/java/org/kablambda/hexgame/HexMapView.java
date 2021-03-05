@@ -1,6 +1,7 @@
 package org.kablambda.hexgame;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,6 +16,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.List;
+
+import static org.kablambda.hexgame.MouseButton.LEFT;
+import static org.kablambda.hexgame.MouseButton.RIGHT;
 
 public class HexMapView<T> extends JPanel {
 
@@ -58,7 +62,12 @@ public class HexMapView<T> extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 if (clickedHex != null && clickedHex.equals(calc.pointToHex(e.getX(), e.getY()))) {
                     System.out.println(clickedHex);
-                    mapEventListener.hexClicked(clickedHex);
+                    mapEventListener.hexClicked(new HexClickedEvent(
+                            clickedHex,
+                            calc.pointToHexSide(clickedHex, e.getX(), e.getY()),
+                            SwingUtilities.isLeftMouseButton(e) ? LEFT : RIGHT,
+                            null)
+                    );
                     HexMapView.this.repaint();
                 }
                 clickedHex = null;

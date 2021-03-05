@@ -1,6 +1,7 @@
 package org.kablambda.hexgame.demo;
 
 import org.kablambda.hexgame.HexAddress;
+import org.kablambda.hexgame.HexClickedEvent;
 import org.kablambda.hexgame.HexMap;
 import org.kablambda.hexgame.MapEventListener;
 
@@ -15,8 +16,8 @@ public class DemoListener implements MapEventListener {
     }
 
     @Override
-    public void hexClicked(HexAddress address) {
-        map.put(address, map.get(address).map(c -> c == Color.CYAN ? Color.ORANGE : Color.CYAN).orElse(Color.CYAN));
+    public void hexClicked(HexClickedEvent event) {
+        map.put(event.hexAddress(), map.get(event.hexAddress()).map(c -> c == Color.CYAN ? Color.ORANGE : Color.CYAN).orElse(Color.CYAN));
     }
 
     @Override

@@ -1,7 +1,8 @@
 package org.kablambda.hexgame.wargame;
 
 import org.kablambda.hexgame.HexAddress;
+import org.kablambda.hexgame.HexClickedEvent;
 
 public interface WargameEventHandler {
-    WargameEventHandler hexClicked(HexAddress address);
+    WargameEventHandler hexClicked(HexClickedEvent address);
 }

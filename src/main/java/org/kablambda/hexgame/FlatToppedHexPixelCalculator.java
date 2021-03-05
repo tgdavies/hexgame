@@ -1,10 +1,13 @@
 package org.kablambda.hexgame;
 
 import com.google.common.base.Suppliers;
+import com.google.common.collect.Streams;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -145,6 +148,20 @@ public class FlatToppedHexPixelCalculator implements HexPixelCalculator {
         double r = (-1.0 / 3.0 * x + (SQRT3 / 3.0) * y) / size;
         return round(q, r);
     }
+
+    @Override
+    public Optional<HexSide> pointToHexSide(HexAddress hex, int x, int y) {
+        Point2D center = center(hex);
+        var dx = x - center.getX();
+        var dy = y - center.getY();
+        return Streams.mapWithIndex(vertices().stream(),
+                (v, i) -> new DistIndex(Math.sqrt(Math.pow(v.getX()-dx, 2) + Math.pow(v.getY()-dy, 2)), i))
+                .min(Comparator.comparingDouble(p -> p.distance()))
+                .map(p -> HexSide.values()[(int)p.index()]);
+        //TODO use center point of edge
+    }
+
+    private record DistIndex(double distance, long index) {};
 
     private HexAddress round(double q, double r) {
         double x = q;

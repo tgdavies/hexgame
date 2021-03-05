@@ -2,7 +2,7 @@ package org.kablambda.hexgame;
 
 import java.awt.geom.Point2D;
 import java.util.List;
-
+import java.util.Optional;
 
 public interface HexPixelCalculator {
     Point2D center(HexAddress address);
@@ -12,6 +12,8 @@ public interface HexPixelCalculator {
     HexAddress closest(HexAddress target, HexAddress... candidates);
 
     HexSide hexSideBetween(HexAddress h1, HexAddress h2);
+
+    Optional<HexSide> pointToHexSide(HexAddress hex, int x, int y);
 
     List<HexAddress> surroundingHexes(HexAddress location, HexMap<?> map);
 
